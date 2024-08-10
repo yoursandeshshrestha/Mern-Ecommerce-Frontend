@@ -4,11 +4,13 @@ import crossImage from "../../assets/UserAsset/close.png";
 import emptyCart from "../../assets/UserAsset/cartEmpty.jpg";
 import { userContext } from "../../Context/userContext";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Cart() {
   const { currentUser } = useContext(userContext);
   const [cartProducts, setCartProducts] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currentUser) {
@@ -25,17 +27,11 @@ function Cart() {
   };
 
   const handleRemoveItem = async (id) => {
-    console.log(id);
-
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/cart/remove`,
-        {
-          userId: currentUser._id,
-          productID: id,
-        }
+        { userId: currentUser._id, productID: id }
       );
-      console.log(response.data);
 
       setCartProducts(response.data.cartDetails);
     } catch (error) {
@@ -47,11 +43,7 @@ function Cart() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/cart/update-quantity`,
-        {
-          userId: currentUser._id,
-          productID,
-          quantityChange,
-        }
+        { userId: currentUser._id, productID, quantityChange }
       );
 
       setCartProducts(response.data.cartDetails);
@@ -155,7 +147,12 @@ function Cart() {
             {calculateSubtotal() + 60}
           </p>
         </div>
-        <button className="Check-Out-Button">Proceed to Checkout</button>
+        <button
+          className="Check-Out-Button"
+          onClick={() => navigate("/cart/checkout")}
+        >
+          Proceed to Checkout
+        </button>
       </div>
     </div>
   );
